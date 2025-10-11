@@ -6,7 +6,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="formResetPassword{{ $id }}" tabindex="-1" aria-labelledby="formResetPasswordLabel" aria-hidden="true">
-    <form action="{{ route('users.reset-password') }}" method="POST">
+    <form action="{{ route('admin.users.reset-password') }}" method="POST">
         @csrf
         <input type="hidden" name="id" value="{{ $id }}">
   <div class="modal-dialog">

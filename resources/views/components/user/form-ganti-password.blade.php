@@ -1,6 +1,6 @@
 <div>
 <div class="modal fade" id="formGantiPassword" tabindex="-1" aria-labelledby="formGantiPasswordLabel" aria-hidden="true">
-    <form action="{{ route('users.ganti-password') }}" method="POST">
+    <form action="{{ route('admin.users.ganti-password') }}" method="POST">
         @csrf
   <div class="modal-dialog">
     <div class="modal-content">

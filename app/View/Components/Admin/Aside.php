@@ -18,32 +18,39 @@ class Aside extends Component
             [
                 "label" => "Dashboard",
                 "icon" => "fas fa-laptop",
-                "route_name" => "dashboard",
-                "route_active" => "dashboard",
+                "route_name" => "admin.dashboard",
+                "route_active" => "admin.dashboard",
                 "is_dropdown" => false,
             ],
             [
                 "label" => "Master Data",
                 "icon" => "fas fa-database",
-                "route_active" => "master-data.*",
+                "route_active" => "admin.kategori.*",
                 "is_dropdown" => true,
                 "dropdown" => [
                     [
                         "label" => "Kategori",
-                        "route_active" => "master-data.kategori.*",
-                        "route_name" => "master-data.kategori.index",
+                        "route_active" => "admin.kategori.*",
+                        "route_name" => "admin.kategori.index",
                     ], [
                         "label" => "Produk",
-                        "route_active" => "master-data.product.*",
-                        "route_name" => "master-data.product.index",
+                        "route_active" => "admin.product.*",
+                        "route_name" => "admin.product.index",
                     ],
                 ]
             ],
             [
-                "label" => "Users",
+                "label" => "User",
                 "icon" => "fas fa-users",
-                "route_name" => "users.index",
-                "route_active" => "users.*",
+                "route_name" => "admin.users.index",
+                "route_active" => "admin.users.*",
+                "is_dropdown" => false,
+            ],
+            [
+                "label" => "Pesanan",
+                "icon" => "fas fa-shopping-cart",
+                "route_name" => "admin.orders.index",
+                "route_active" => "admin.orders.*",
                 "is_dropdown" => false,
             ],
         ];

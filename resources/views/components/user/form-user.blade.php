@@ -7,7 +7,7 @@
                   @endif
     </button>
     <div class="modal fade" id="formUser{{ $id ?? '' }}">
-        <form action="{{ route('users.store') }}" method="POST">
+        <form action="{{ route('admin.users.store') }}" method="POST">
             @csrf
             <input type="hidden" name="id" value="{{ $id ?? '' }}">
         <div class="modal-dialog">

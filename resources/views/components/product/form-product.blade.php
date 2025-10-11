@@ -11,7 +11,7 @@
     </button>
 
    <div class="modal fade" id="formProduct{{ $id ?? '' }}">
-       <form action="{{ route('master-data.product.store') }}" 
+       <form action="{{ route('admin.product.store') }}" 
              method="POST" 
              enctype="multipart/form-data">
            @csrf

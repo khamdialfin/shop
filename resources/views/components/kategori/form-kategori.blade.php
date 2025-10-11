@@ -7,7 +7,7 @@
                 @endif
     </button>
      <div class="modal fade" id="formKategori{{ $id ?? '' }}">
-      <form action="{{ route('master-data.kategori.index') }}" method="POST">
+      <form action="{{ route('admin.kategori.index') }}" method="POST">
         @csrf
         <input type="hidden" name="id" value="{{ $id ?? '' }}">
         <div class="modal-dialog">

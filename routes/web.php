@@ -1,54 +1,147 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\KategoriController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\UserController;
+
+// AUTH
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
+// ADMIN
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\KategoriController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 
-Route::get('/', function () {
-    return view('user.home');
-})->name('user.home');
-Route::get('/', function () {
-    return view('auth.login');
-})->middleware('guest');
+// USER
+use App\Http\Controllers\User\ProductController as UserProductController;
+use App\Http\Controllers\User\CartController;
+use App\Http\Controllers\User\OrderController as UserOrderController;
+use App\Http\Controllers\User\CheckoutController;
 
+/*
+|--------------------------------------------------------------------------
+| ROUTE UNTUK TAMU (BELUM LOGIN)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('guest')->group(function () {
 
+    Route::get('/', function () {
+        return view('auth.login');
+    })->name('login');
 
-Route::get('/register', [RegisterController::class, 'index'])->name('register');
-Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+    Route::post('/login', [LoginController::class, 'handleLogin'])->name('login.handle');
 
-Route::post('/login', [LoginController::class, 'handleLogin'])->name('login')->middleware('guest');
+    Route::get('/register', [RegisterController::class, 'index'])->name('register');
+    Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+});
 
+/*
+|--------------------------------------------------------------------------
+| ROUTE UNTUK USER YANG SUDAH LOGIN
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
 
-Route::middleware('auth')->group(function() {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
+    // Logout
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-    Route::middleware(['auth','admin'])->prefix('/master-data')->as('master-data.')->group(function (){
-        Route::prefix('kategori')->as('kategori.')->controller(KategoriController::class)->group(function (){
+    // Redirect berdasarkan role
+    Route::get('/redirect-by-role', function (): RedirectResponse {
+        $user = Auth::user();
+        if ($user && $user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+        return redirect()->route('user.home');
+    })->name('redirect.by.role');
+
+    /*
+    |--------------------------------------------------------------------------
+    | ROUTE KHUSUS ADMIN
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware('admin')->prefix('admin')->as('admin.')->group(function () {
+
+        // Dashboard
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        // Kategori
+        Route::prefix('kategori')->as('kategori.')->controller(KategoriController::class)->group(function () {
             Route::get('/', 'index')->name('index');
             Route::post('/', 'store')->name('store');
             Route::delete('/{id}/destroy', 'destroy')->name('destroy');
         });
 
-        Route::prefix('product')->as('product.')->controller(ProductController::class)->group(function () {
+        // Produk
+        Route::prefix('product')->as('product.')->controller(AdminProductController::class)->group(function () {
             Route::get('/', 'index')->name('index');
             Route::post('/', 'store')->name('store');
             Route::delete('/{id}/destroy', 'destroy')->name('destroy');
         });
+
+        // User
+        Route::prefix('users')->as('users.')->controller(AdminUserController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/', 'store')->name('store');
+            Route::delete('/{id}/destroy', 'destroy')->name('destroy');
+            Route::post('/ganti-password', 'gantiPassword')->name('ganti-password');
+            Route::post('/reset-password', 'resetPassword')->name('reset-password');
+        });
+
+        // Order
+        Route::prefix('orders')->as('orders.')->controller(AdminOrderController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/{id}', 'show')->name('show');
+            Route::post('/{id}/status', 'updateStatus')->name('updateStatus');
+        });
     });
-    
-    Route::prefix('users')->as('users.')->controller(UserController::class)->group(function(){
-         Route::get('/', 'index')->name('index');
-         Route::post('/', 'store')->name('store');
-         Route::delete('/{id}/destroy', 'destroy')->name('destroy');
-         Route::post('/ganti-password', 'gantiPassword')->name('ganti-password');
-         Route::post('/reset-password', 'resetPassword')->name('reset-password');
+
+    /*
+    |--------------------------------------------------------------------------
+    | ROUTE KHUSUS USER
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('user')->as('user.')->group(function () {
+
+        // Halaman utama
+        Route::get('/home', [App\Http\Controllers\User\HomeController::class, 'index'])->name('home');
+        Route::view('/about', 'user.about')->name('about');
+        Route::view('/contact', 'user.contact')->name('contact');
+
+        // Produk
+        Route::get('/products', [UserProductController::class, 'index'])->name('products.index');
+        Route::get('/products/{id}', [UserProductController::class, 'show'])->name('products.show');
+
+        // Keranjang
+        Route::prefix('cart')->as('cart.')->controller(CartController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/add/{id}', 'add')->name('add');
+            Route::post('/remove/{id}', 'remove')->name('remove');
+            Route::post('/update/{id}', 'update')->name('update');
+            Route::post('/checkout', 'checkout')->name('checkout');
+        });
+
+        // Checkout
+        Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+        Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+
+        // Pesanan aktif
+        Route::prefix('active-orders')->as('active-orders.')->controller(UserOrderController::class)->group(function () {
+            Route::get('/', 'activeOrders')->name('index');
+            Route::get('/{id}', 'activeOrdersShow')->name('show');
+            Route::post('/pay/{id}', 'pay')->name('pay');
+            Route::post('/confirm/{id}', 'confirm')->name('confirm');
+        });
+
+        // Riwayat pesanan
+        Route::prefix('orders')->as('orders.')->controller(UserOrderController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/{id}', 'show')->name('show');
+            Route::post('/{id}/pay', 'pay')->name('pay');
+            Route::post('/{id}/confirm', 'confirm')->name('confirm');
+        });
     });
 
 });

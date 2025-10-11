@@ -33,7 +33,7 @@
             </ul>
         </div>
         @endif
-      <form action="{{ route('login') }}" method="post">
+      <form action="{{ route('login.handle') }}" method="post">
         @csrf
         <div class="input-group mb-3">
           <input type="email" name="email" class="form-control" placeholder="Email">
@@ -67,6 +67,13 @@
           <i class="fab fa-google-plus mr-2"></i> Sign in using Google+
         </a>
       </div>
+      <div class="mt-4 text-center">
+    <p>Belum punya akun?</p>
+    <a href="{{ route('register') }}" class="text-blue-600 hover:underline">
+        Daftar Sekarang
+    </a>
+</div>
+
       <!-- /.social-auth-links -->
     </div>
     <!-- /.card-body -->

@@ -14,32 +14,32 @@ class LoginController extends Controller
 
     public function handleLogin(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ],[
-            'email.required' => 'email harus diisi',
-            'email.email' => 'email tidak valid',
-            'password.required' => 'password harus diisi',
-        ]);
+      
+        $credentials = $request->only('email', 'password');
 
-        if(Auth::attempt($credentials)) {
-            
-            $request->session()->regenerate();
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
 
-            return redirect()->intended('/dashboard');
+            if ($user->role === 'admin') {
+                // Jika admin
+                return redirect()->route('admin.dashboard');
+            } else {
+                // Jika user biasa
+                return redirect()->route('user.home');
+            }
         }
 
         return back()->withErrors([
-            'email' => 'Kredential yang anda masukan tidak sesuai dengan data kami.',
-        ])->onlyInput('email');
+            'email' => 'Email atau password salah!',
+        ]);
     }
 
     public function logout(Request $request)
     {
+       
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        return redirect()->route('login');
     }
 }
