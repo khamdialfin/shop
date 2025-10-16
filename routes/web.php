@@ -121,13 +121,14 @@ Route::middleware('auth')->group(function () {
             Route::post('/remove/{id}', 'remove')->name('remove');
             Route::post('/update/{id}', 'update')->name('update');
             Route::post('/checkout', 'checkout')->name('checkout');
+            Route::post('/cart/clear',  'clear')->name('clear');
         });
 
         // Checkout
         Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
         Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
-        // Pesanan aktif
+        // Pesanan 
         Route::prefix('active-orders')->as('active-orders.')->controller(UserOrderController::class)->group(function () {
             Route::get('/', 'activeOrders')->name('index');
             Route::get('/{id}', 'activeOrdersShow')->name('show');

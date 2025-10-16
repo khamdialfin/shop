@@ -7,7 +7,28 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends Model
 {
-    protected $fillable = ['user_id', 'total_price', 'status'];
+    use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'order_number',
+        'customer_name',
+        'customer_email',
+        'customer_phone',
+        'customer_address',
+        'customer_city',
+        'customer_postal_code',
+        'subtotal',
+        'tax',
+        'total',
+        'payment_method',
+        'status'
+    ];
+    protected $casts = [
+        'subtotal' => 'decimal:2',
+        'tax' => 'decimal:2',
+        'total' => 'decimal:2',
+    ];
 
     // Relasi ke user
     public function user()
@@ -19,5 +40,10 @@ class Order extends Model
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+      public static function generateOrderNumber()
+    {
+        return 'ORD-' . time() . '-' . rand(1000, 9999);
     }
 }

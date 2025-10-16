@@ -5,7 +5,7 @@
 @section('content')
 <div class="px-8 py-6 min-h-screen bg-gray-50">
     <h2 class="text-3xl font-semibold mb-6 flex items-center gap-2">
-        🧾 Pesanan Aktif
+         Pesanan Aktif
     </h2>
 
     @if($orders->count() > 0)

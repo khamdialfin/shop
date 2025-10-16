@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://kit.fontawesome.com/a2e0e9b5d4.js" crossorigin="anonymous"></script>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
+      crossorigin="anonymous" />
 </head>
 <body class="bg-gray-100 font-sans flex flex-col min-h-screen">
 
@@ -27,11 +31,8 @@
                 <a href="{{ route('user.products.index') }}" class="hover:text-blue-700 flex items-center gap-1">
                     <i class="fas fa-book"></i> Produk
                 </a>
-                <a href="{{ route('user.cart.index') }}" class="hover:text-blue-700 flex items-center gap-1">
-                    <i class="fas fa-shopping-cart"></i> Keranjang
-                </a>
                 <a href="{{ route('user.active-orders.index') }}" class="hover:text-blue-700 flex items-center gap-1">
-                    <i class="fas fa-truck"></i> Pesanan Aktif
+                    <i class="fas fa-truck"></i> Pesanan
                 </a>
                 <a href="{{ route('user.orders.index') }}" class="hover:text-blue-700 flex items-center gap-1">
                     <i class="fas fa-clock-rotate-left"></i> Riwayat
@@ -39,7 +40,16 @@
             </nav>
 
             {{-- LOGOUT (KANAN) --}}
-            <div class="flex justify-end">
+             <div class="flex items-center gap-4 ms-auto">
+                {{-- Icon Keranjang --}}
+                <a class="nav-link position-relative" href="{{ route('user.cart.index') }}">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                </a>
+                 <a class="nav-link position-relative" href="#">
+                    <i class="fas fa-user"></i> {{ Auth::user()->name }}
+                </a>
+
+                {{-- Tombol Logout --}}
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button type="submit" 

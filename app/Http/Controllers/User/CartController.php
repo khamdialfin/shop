@@ -50,12 +50,42 @@ class CartController extends Controller
 
     public function update(Request $request, $id)
     {
-    $cart = session()->get('cart', []);
+    $action = $request->input('action');
+    
+    if ($action === 'increase') {
+        // Increase quantity
+        $cart = session()->get('cart', []);
+        if(isset($cart[$id])) {
+            $cart[$id]['quantity']++;
+            session()->put('cart', $cart);
+        }
+    } elseif ($action === 'decrease') {
+        // Decrease quantity
+        $cart = session()->get('cart', []);
+        if(isset($cart[$id])) {
+            if($cart[$id]['quantity'] > 1) {
+                $cart[$id]['quantity']--;
+            } else {
+                // Jika quantity 1, hapus item
+                unset($cart[$id]);
+            }
+            session()->put('cart', $cart);
+        }
+    } else {
+        // Update quantity manual (dari input number)
+        $request->validate([
+            'quantity' => 'required|integer|min:1'
+        ]);
+        
+        $cart = session()->get('cart', []);
         if(isset($cart[$id])) {
             $cart[$id]['quantity'] = $request->quantity;
             session()->put('cart', $cart);
         }
-        return redirect()->back()->with('success', 'Jumlah produk berhasil diupdate.');
+    }
+    
+    return redirect()->back()->with('success', 'Keranjang berhasil diperbarui!');
+
     }
     public function checkout()
     {
@@ -90,5 +120,11 @@ class CartController extends Controller
     session()->forget('cart');
 
     return redirect()->route('user.home')->with('success', 'Checkout berhasil! Order sudah tercatat.');
+    }
+
+    public function clear()
+    {
+    session()->forget('cart');
+    return redirect()->back()->with('success', 'Keranjang berhasil dikosongkan!');
     }
 }

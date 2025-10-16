@@ -14,12 +14,14 @@
 </div>
 
 <!-- Tentang Toko -->
-<div class="text-center max-w-3xl mx-auto mb-12 px-4">
-    <h2 class="text-2xl font-semibold mb-3">Toko Buku Lengkap & Terpercaya</h2>
-    <p class="text-gray-600 leading-relaxed">
-        Temukan berbagai koleksi buku menarik — dari pelajaran sekolah, novel populer, hingga buku pengembangan diri. 
-        Kami menyediakan buku-buku berkualitas dengan harga terbaik, siap dikirim ke seluruh Indonesia.
-    </p>
+<div class="text-center mx-auto mb-12">
+    <h1 class="text-2xl font-semibold mb-3">Toko Buku Lengkap & Terpercaya</h1>
+    <h2 class="text-gray-600 leading-relaxed">
+        <bold> "Selamat datang di Book SHOP, surga bagi para pecinta buku! Temukan koleksi lengkap dari ribuan judul buku, mulai dari fiksi, non-fiksi, buku anak, hingga buku langka.
+        Di sini, Anda dapat menjelajahi dunia literasi dari berbagai genre dan penulis terkemuka.
+        Jual beli buku baru dan bekas dengan mudah, aman, dan harga terbaik. Mari temukan kisah favorit Anda dan perluas wawasan bersama kami!"Temukan berbagai koleksi buku menarik — dari pelajaran sekolah, novel populer, hingga buku pengembangan diri. 
+        Kami menyediakan buku-buku berkualitas dengan harga terbaik, siap dikirim ke seluruh Indonesia.</bold>
+    </h2>
 </div>
 
 <!-- Produk -->
@@ -47,4 +49,40 @@
         @endforelse
     </div>
 </div>
+<!-- Simple Contact Section -->
+<section class="contact-simple py-5 bg-dark text-white mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto text-center">
+                <h3 class="mb-4">Contact Us</h3>
+                <p class="lead mb-4">
+                    Untuk informasi dan pemesanan, hubungi kami melalui:
+                </p>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <i class="fas fa-phone fa-lg mb-2"></i>
+                        <p>+62 812-3456-7890</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <i class="fas fa-envelope fa-lg mb-2"></i>
+                        <p>bookshop@gmail.com</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <i class="fas fa-map-marker-alt fa-lg mb-2"></i>
+                        <p>Jakarta, Indonesia</p>
+                    </div>
+                </div>
+                <p class="text-muted">
+                    Customer service kami siap membantu Anda dari Senin - Jumat, 09:00 - 18:00 WIB
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.contact-simple {
+    background: #2c3e50 !important;
+}
+</style>
 @endsection

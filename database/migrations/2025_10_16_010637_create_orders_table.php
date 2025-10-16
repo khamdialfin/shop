@@ -14,7 +14,17 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->decimal('total_price', 15, 2);
+            $table->string('order_number')->unique();
+            $table->string('customer_name');
+            $table->string('customer_email');
+            $table->string('customer_phone');
+            $table->text('customer_address');
+            $table->string('customer_city');
+            $table->string('customer_postal_code');
+            $table->decimal('subtotal', 15, 2)->default(0);
+            $table->decimal('tax', 15, 2)->default(0);
+            $table->decimal('total', 15, 2)->default(0);
+            $table->string('payment_method');
             $table->string('status')->default('pending');
             $table->timestamps();
         });
