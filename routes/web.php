@@ -129,19 +129,14 @@ Route::middleware('auth')->group(function () {
         Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
         // Pesanan 
-        Route::prefix('active-orders')->as('active-orders.')->controller(UserOrderController::class)->group(function () {
-            Route::get('/', 'activeOrders')->name('index');
-            Route::get('/{id}', 'activeOrdersShow')->name('show');
-            Route::post('/pay/{id}', 'pay')->name('pay');
-            Route::post('/confirm/{id}', 'confirm')->name('confirm');
-        });
-
-        // Riwayat pesanan
         Route::prefix('orders')->as('orders.')->controller(UserOrderController::class)->group(function () {
             Route::get('/', 'index')->name('index');
-            Route::get('/{id}', 'show')->name('show');
-            Route::post('/{id}/pay', 'pay')->name('pay');
-            Route::post('/{id}/confirm', 'confirm')->name('confirm');
+            Route::post('/pay/{id}', 'pay')->name('pay');
+            Route::post('/confirm/{id}', 'confirm')->name('confirm');
+              // Payment routes
+            Route::get('/{order}/payment/modal', 'showPaymentModal')->name('payment.modal');
+            Route::post('/{order}/payment/process', 'processPayment')->name('payment.process');
+            Route::post('/{order}/payment/cod', 'processCodPayment')->name('payment.cod');
         });
     });
 

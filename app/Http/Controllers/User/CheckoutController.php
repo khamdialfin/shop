@@ -103,7 +103,7 @@ class CheckoutController extends Controller
             // Kosongkan session cart
             Session::forget('cart');
 
-            return redirect()->route('user.orders.show', $order->id)
+            return redirect()->route('user.orders.index', $order->id)
                            ->with('success', 'Pesanan berhasil dibuat! Silakan lakukan pembayaran.');
 
         } catch (\Exception $e) {

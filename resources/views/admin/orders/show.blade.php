@@ -3,70 +3,167 @@
 @section('title', 'Detail Order #' . $order->id)
 
 @section('content')
-<div class="card">
-    <div class="card-body">
-         {{-- Flash Message --}}
-    @if(session('success'))
-        <div class="bg-green-200 text-green-800 p-3 rounded mb-4">
-            {{ session('success') }}
+<div class="row">
+    <div class="col-12">
+        {{-- Flash Message --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i> {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        <div class="card">
+            <div class="card-header">
+                <h4>Detail Order #{{ $order->order_number }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Informasi Order</h6>
+                        <table class="table table-bordered">
+                            <tr>
+                                <td><strong>User</strong></td>
+                                <td>{{ $order->user->name }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Email</strong></td>
+                                <td>{{ $order->customer_email }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Telepon</strong></td>
+                                <td>{{ $order->customer_phone }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Alamat</strong></td>
+                                <td>{{ $order->customer_address }}, {{ $order->customer_city }} {{ $order->customer_postal_code }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Order</strong></td>
+                                <td>Rp {{ number_format($order->total, 0, ',', '.') }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Metode Pembayaran</strong></td>
+                                <td>{{ ucfirst($order->payment_method) }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Status Order</h6>
+                        <table class="table table-bordered">
+                            <tr>
+                                <td><strong>Status Order</strong></td>
+                                <td>
+                                    <span class="badge 
+                                        @if($order->status == 'pending') bg-warning
+                                        @elseif($order->status == 'paid') bg-info
+                                        @elseif($order->status == 'processing') bg-primary
+                                        @elseif($order->status == 'completed') bg-success
+                                        @elseif($order->status == 'cancelled') bg-danger
+                                        @else bg-secondary @endif">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tanggal Order</strong></td>
+                                <td>{{ $order->created_at->format('d-m-Y H:i') }}</td>
+                            </tr>
+                            @if($order->payment_proof)
+                            <tr>
+                                <td><strong>Bukti Pembayaran</strong></td>
+                                <td>
+                                    <a href="{{ asset('storage/' . $order->payment_proof) }}" 
+                                       target="_blank" 
+                                       class="btn btn-info btn-sm">
+                                        <i class="fas fa-image"></i> Lihat Bukti
+                                    </a>
+                                </td>
+                            </tr>
+                            @endif
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Form Ubah Status --}}
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
+                            @csrf
+                            <div class="form-group">
+                                <label for="status"><strong>Ubah Status Order</strong></label>
+                                <select name="status" class="form-control" required>
+                                    <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="paid" {{ $order->status == 'paid' ? 'selected' : '' }}>Paid</option>
+                                    <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>Processing</option>
+                                    <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>Completed</option>
+                                    <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-2">
+                                <i class="fas fa-sync-alt"></i> Update Status
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-    @endif
 
-    <h2 class="text-2xl font-bold mb-4">Detail Order #{{ $order->id }}</h2>
-
-    <div class="grid grid-cols-2 gap-4 mb-6">
-        <div>
-            <p><strong>User:</strong> {{ $order->user->name }}</p>
-            <p><strong>Total:</strong> Rp {{ number_format($order->total_price,0,',','.') }}</p>
+        {{-- Tabel Produk --}}
+        <div class="card">
+            <div class="card-header">
+                <h4>Produk dalam Order</h4>
+            </div>
+            <div class="card-body">
+                @if($order->items->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Produk</th>
+                                <th>Harga</th>
+                                <th>Jumlah</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($order->items as $item)
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        @if($item->product->image)
+                                            <img src="{{ asset('storage/' . $item->product->image) }}" 
+                                                 alt="{{ $item->product->name }}" 
+                                                 class="rounded me-3" 
+                                                 width="50" height="50">
+                                        @endif
+                                        <div>
+                                            <strong>{{ $item->product->name }}</strong>
+                                            @if($item->product->kategori)
+                                                <br><small class="text-muted">{{ $item->product->kategori->name }}</small>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td>
+                                <td>{{ $item->quantity }}</td>
+                                <td>Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}</td>
+                            </tr>
+                            @endforeach
+                            <tr class="table-primary">
+                                <td colspan="3" class="text-end"><strong>Total Order:</strong></td>
+                                <td><strong>Rp {{ number_format($order->total, 0, ',', '.') }}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                @else
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Belum ada produk dalam order ini.
+                </div>
+                @endif
+            </div>
         </div>
-        <div>
-            <p><strong>Status:</strong> {{ ucfirst($order->status) }}</p>
-            <p><strong>Tanggal:</strong> {{ $order->created_at->format('d-m-Y H:i') }}</p>
-        </div>
-    </div>
-
-    {{-- Form Ubah Status --}}
-    <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="flex items-center gap-2 mb-6">
-        @csrf
-        <select name="status" class="border rounded px-3 py-2">
-            <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
-            <option value="paid" {{ $order->status == 'paid' ? 'selected' : '' }}>Paid</option>
-            <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>Completed</option>
-        </select>
-        <button type="submit" class="btn btn-primary">Update Status</button>
-    </form>
-
     </div>
 </div>
-<div class="card">
-    <div class="card-body">
-         {{-- Tabel Produk --}}
-    <h3 class="text-xl font-semibold mb-2">Produk dalam Order</h3>
-    @if($order->items->count() > 0)
-    <table class="table table-sm" id="table2">
-        <thead class="bg-gray-100">
-            <tr>
-                <th class="p-3 border-b">Produk</th>
-                <th class="p-3 border-b">Harga</th>
-                <th class="p-3 border-b">Jumlah</th>
-                <th class="p-3 border-b">Subtotal</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($order->items as $item)
-            <tr class="border-b">
-                <td class="p-3">{{ $item->product->name }}</td>
-                <td class="p-3">Rp {{ number_format($item->price,0,',','.') }}</td>
-                <td class="p-3">{{ $item->quantity }}</td>
-                <td class="p-3">Rp {{ number_format($item->price * $item->quantity,0,',','.') }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-    @else
-    <p class="text-gray-500 mt-2">Belum ada produk dalam order ini.</p>
-    @endif
-    </div>
-</div>
-
 @endsection

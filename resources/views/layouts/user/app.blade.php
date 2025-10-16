@@ -31,11 +31,8 @@
                 <a href="{{ route('user.products.index') }}" class="hover:text-blue-700 flex items-center gap-1">
                     <i class="fas fa-book"></i> Produk
                 </a>
-                <a href="{{ route('user.active-orders.index') }}" class="hover:text-blue-700 flex items-center gap-1">
-                    <i class="fas fa-truck"></i> Pesanan
-                </a>
                 <a href="{{ route('user.orders.index') }}" class="hover:text-blue-700 flex items-center gap-1">
-                    <i class="fas fa-clock-rotate-left"></i> Riwayat
+                    <i class="fas fa-truck"></i> Pesanan
                 </a>
             </nav>
 

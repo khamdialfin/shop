@@ -5,39 +5,58 @@
 @section('content')
 <div class="card">
     <div class="card-header">
-         <h4 class="card-title">Daftar Order</h4>
+        <h4 class="card-title">Daftar Order</h4>
     </div>
     <div class="card-body">
         @if($orders->count() > 0)
-<table class="table table-sm" id="table2">
-    <thead>
-        <tr class="border-b">
-            <th class="p-2">ID Order</th>
-            <th class="p-2">User</th>
-            <th class="p-2">Total</th>
-            <th class="p-2">Status</th>
-            <th class="p-2">Tanggal</th>
-            <th class="p-2">Aksi</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($orders as $order)
-        <tr class="border-b">
-            <td class="p-2">{{ $order->id }}</td>
-            <td class="p-2">{{ $order->user->name }}</td>
-            <td class="p-2">Rp {{ number_format($order->total_price,0,',','.') }}</td>
-            <td class="p-2">{{ ucfirst($order->status) }}</td>
-            <td class="p-2">{{ $order->created_at->format('d-m-Y H:i') }}</td>
-            <td class="p-2">
-                <a href="{{ route('admin.orders.show', $order->id) }}" class="px-3 py-1 bg-blue-700 text-black rounded hover:bg-blue-800">Detail</a>
-            </td>
-        </tr>
-        @endforeach
-    </tbody>
-</table>
-@else
-<p>Belum ada order.</p>
-@endif
+        <div class="table-responsive">
+            <table class="table table-striped" id="table1">
+                <thead>
+                    <tr>
+                        <th>ID Order</th>
+                        <th>User</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Metode Bayar</th>
+                        <th>Tanggal</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($orders as $order)
+                    <tr>
+                        <td>#{{ $order->order_number }}</td>
+                        <td>{{ $order->user->name }}</td>
+                        <td>Rp {{ number_format($order->total, 0, ',', '.') }}</td>
+                        <td>
+                            <span class="badge 
+                                @if($order->status == 'pending') bg-warning
+                                @elseif($order->status == 'paid') bg-info
+                                @elseif($order->status == 'processing') bg-primary
+                                @elseif($order->status == 'completed') bg-success
+                                @elseif($order->status == 'cancelled') bg-danger
+                                @else bg-secondary @endif">
+                                {{ ucfirst($order->status) }}
+                            </span>
+                        </td>
+                        <td>{{ ucfirst($order->payment_method) }}</td>
+                        <td>{{ $order->created_at->format('d-m-Y H:i') }}</td>
+                        <td>
+                            <a href="{{ route('admin.orders.show', $order->id) }}" 
+                               class="btn btn-primary btn-sm">
+                                <i class="fas fa-eye"></i> Detail
+                            </a>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @else
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> Belum ada order.
+        </div>
+        @endif
     </div>
 </div>
 @endsection

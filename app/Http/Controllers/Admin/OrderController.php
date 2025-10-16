@@ -9,27 +9,33 @@ use App\Http\Controllers\Controller;
 class OrderController extends Controller
 {
     
-    // Tampilkan semua order
+   // Tampilkan semua order
     public function index()
     {
-        $orders = Order::with('user')->orderBy('created_at', 'desc')->get();
+        $orders = Order::with('user')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
         return view('admin.orders.index', compact('orders'));
     }
 
     // Tampilkan detail order
     public function show($id)
     {
-        // Load order + user + item + product
-        $order = Order::with('user', 'items.product')->findOrFail($id);
+        $order = Order::with(['user', 'items.product.kategori'])
+            ->findOrFail($id);
+        
         return view('admin.orders.show', compact('order'));
     }
+
+    // Update status order
     public function updateStatus(Request $request, $id)
     {
         $order = Order::findOrFail($id);
 
         // Validasi status baru
         $request->validate([
-            'status' => 'required|in:pending,paid,completed',
+            'status' => 'required|in:pending,paid,processing,completed,cancelled',
         ]);
 
         $order->status = $request->status;
@@ -37,4 +43,5 @@ class OrderController extends Controller
 
         return redirect()->back()->with('success', 'Status order berhasil diperbarui.');
     }
+
 }
