@@ -22,12 +22,15 @@ class Order extends Model
         'tax',
         'total',
         'payment_method',
-        'status'
+        'status',
+        'payment_status',
+        'confirmed_by_user'
     ];
     protected $casts = [
         'subtotal' => 'decimal:2',
         'tax' => 'decimal:2',
         'total' => 'decimal:2',
+        'confirmed_by_user' => 'boolean',
     ];
 
     // Relasi ke user

@@ -15,17 +15,25 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('order_number')->unique();
+            
+            // Informasi customer
             $table->string('customer_name');
             $table->string('customer_email');
             $table->string('customer_phone');
             $table->text('customer_address');
             $table->string('customer_city');
             $table->string('customer_postal_code');
+            
+            // Informasi harga
             $table->decimal('subtotal', 15, 2)->default(0);
             $table->decimal('tax', 15, 2)->default(0);
             $table->decimal('total', 15, 2)->default(0);
+            
+            // Status dan pembayaran
             $table->string('payment_method');
-            $table->string('status')->default('pending');
+            $table->string('status')->default('pending'); // pending, processing, completed, cancelled
+            $table->string('payment_status')->default('pending'); // pending, paid, failed
+            $table->boolean('confirmed_by_user')->default(false);
             $table->timestamps();
         });
     }

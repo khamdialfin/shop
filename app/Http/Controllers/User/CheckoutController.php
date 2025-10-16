@@ -20,48 +20,95 @@ class CheckoutController extends Controller
             return redirect()->route('user.cart.index')->with('error', 'Keranjang belanja kosong!');
         }
 
-        $total = 0;
+        // Hitung total
+        $subtotal = 0;
         foreach($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
+            $subtotal += $item['price'] * $item['quantity'];
         }
+        $tax = $subtotal * 0.11; // Pajak 11%
+        $total = $subtotal + $tax;
 
-        return view('user.checkout.index', compact('cart', 'total'));
+
+        return view('user.checkout.index', compact('cart', 'subtotal', 'tax', 'total'));
     }
 
-    // Simpan order
+   // Simpan order
     public function store(Request $request)
     {
         $request->validate([
-            'address' => 'required|string|max:255',
-            'payment_method' => 'required|string|in:cod,transfer',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'phone' => 'required|string|max:15',
+            'address' => 'required|string',
+            'city' => 'required|string',
+            'postal_code' => 'required|string',
+            'payment_method' => 'required|string|in:transfer,ewallet,cod',
         ]);
 
         $cart = session('cart', []);
         if(empty($cart)) {
-            return redirect()->route('user.cart.index')->with('error', 'Keranjang kosong!');
+            return redirect()->route('user.cart.index')->with('error', 'Keranjang belanja kosong!');
         }
 
-        $order = Order::create([
-            'user_id' => Auth::id(),
-            'total_price' => array_sum(array_map(fn($i)=>$i['price']*$i['quantity'],$cart)),
-            'status' => 'pending',
-            'payment_method' => $request->payment_method,
-            'payment_status' => 'unpaid',
-            'address' => $request->address,
-        ]);
+        // Hitung total
+        $subtotal = 0;
+        foreach($cart as $item) {
+            $subtotal += $item['price'] * $item['quantity'];
+        }
+        $tax = $subtotal * 0.11;
+        $total = $subtotal + $tax;
 
-        foreach($cart as $productId => $details) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $productId,
-                'quantity' => $details['quantity'],
-                'price' => $details['price'],
+        try {
+            DB::beginTransaction();
+
+            // Create order dengan struktur baru
+            $order = Order::create([
+                'user_id' => Auth::id(),
+                'order_number' => Order::generateOrderNumber(),
+                
+                // Informasi customer
+                'customer_name' => $request->name,
+                'customer_email' => $request->email,
+                'customer_phone' => $request->phone,
+                'customer_address' => $request->address,
+                'customer_city' => $request->city,
+                'customer_postal_code' => $request->postal_code,
+                
+                // Informasi harga
+                'subtotal' => $subtotal,
+                'tax' => $tax,
+                'total' => $total,
+                
+                // Status dan pembayaran
+                'payment_method' => $request->payment_method,
+                'status' => 'pending',
+                'payment_status' => 'pending',
+                'confirmed_by_user' => false,
             ]);
+
+            // Create order items
+            foreach($cart as $productId => $details) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $productId,
+                    'product_name' => $details['name'],
+                    'quantity' => $details['quantity'],
+                    'price' => $details['price'],
+                    'subtotal' => $details['price'] * $details['quantity'],
+                ]);
+            }
+
+            DB::commit();
+
+            // Kosongkan session cart
+            Session::forget('cart');
+
+            return redirect()->route('user.orders.show', $order->id)
+                           ->with('success', 'Pesanan berhasil dibuat! Silakan lakukan pembayaran.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        // Kosongkan session cart
-        Session::forget('cart');
-
-        return redirect()->route('user.active-orders.index')->with('success', 'Pesanan berhasil dibuat!');
     }
 }
