@@ -68,6 +68,11 @@
         @endif
 
         @yield('content')
+        {{-- FLOATING CONTACT BUTTON (SIMPLE) --}}
+<a href="{{ route('user.contact.index') }}" 
+   class="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center z-50">
+    <i class="fas fa-comment text-xl"></i>
+</a>
     </main>
 
     {{-- FOOTER (Sticky) --}}

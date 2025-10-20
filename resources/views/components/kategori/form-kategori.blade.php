@@ -3,7 +3,7 @@
                    @if ($id)
                 <i class="fas fa-edit"></i>
                   @else
-                  Product Baru
+                  Kategori Baru
                 @endif
     </button>
      <div class="modal fade" id="formKategori{{ $id ?? '' }}">

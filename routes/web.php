@@ -14,12 +14,14 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\MessageController as AdminMessageController;
 
 // USER
 use App\Http\Controllers\User\ProductController as UserProductController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\OrderController as UserOrderController;
 use App\Http\Controllers\User\CheckoutController;
+use App\Http\Controllers\User\MessageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -96,6 +98,14 @@ Route::middleware('auth')->group(function () {
             Route::get('/{id}', 'show')->name('show');
             Route::post('/{id}/status', 'updateStatus')->name('updateStatus');
         });
+
+        Route::prefix('messages')->as('messages.')->controller(AdminMessageController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/{id}', 'show')->name('show');
+            Route::delete('/{id}/destroy', 'destroy')->name('destroy');
+            Route::post('/{id}/read', 'markAsRead')->name('markAsRead');
+            Route::post('/mark-all-read', 'markAllAsRead')->name('markAllRead');
+        });
     });
 
     /*
@@ -138,6 +148,11 @@ Route::middleware('auth')->group(function () {
             Route::post('/{order}/payment/process', 'processPayment')->name('payment.process');
             Route::post('/{order}/payment/cod', 'processCodPayment')->name('payment.cod');
         });
+        Route::get('/contact', function () {
+        return view('user.contact');
+        })->name('contact.index');
+        
+        Route::post('/contact', [MessageController::class, 'store'])->name('contact.store');
     });
 
 });

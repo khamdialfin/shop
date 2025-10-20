@@ -5,7 +5,7 @@
 @section('content')
 <!-- Banner -->
 <div class="relative w-full h-64 md:h-80 overflow-hidden rounded-xl shadow-md mb-8">
-    <img src="{{ asset('storage/images/bgbanner.jpg') }}" 
+    <img src="{{ asset('storage/asset/book.jpg') }}" 
          alt="Banner Toko Buku" 
          class="w-full h-full object-cover">
     <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">

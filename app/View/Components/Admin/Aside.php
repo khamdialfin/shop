@@ -53,6 +53,13 @@ class Aside extends Component
                 "route_active" => "admin.orders.*",
                 "is_dropdown" => false,
             ],
+            [
+                "label" => "Messages",
+                "icon" => "fas fa-sms",
+                "route_name" => "admin.messages.index",
+                "route_active" => "admin.messages.*",
+                "is_dropdown" => false,
+            ],
         ];
     }
 
